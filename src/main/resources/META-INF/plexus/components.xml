@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<component-set>
+    <components>
+
+        <!-- component definitions for SWC -->
+
+        <component>
+            <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+            <role-hint>swc</role-hint>
+            <implementation>
+                org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
+            </implementation>
+            <configuration>
+                <lifecycles>
+                    <lifecycle>
+                        <id>default</id>
+                        <phases>
+                            <generate-resources>
+                                org.astools:as-build-plugin:generate-resources
+                            </generate-resources>
+                            <process-resources>
+                                org.apache.maven.plugins:maven-resources-plugin:resources
+                            </process-resources>
+                            <compile>
+                                org.astools:as-build-plugin:compile-swc
+                            </compile>
+                            <process-test-resources>
+                                org.apache.maven.plugins:maven-resources-plugin:testResources
+                            </process-test-resources>
+                            <test-compile>
+                                org.astools:as-build-plugin:compile-test
+                            </test-compile>
+                            <test>
+                                org.astools:as-build-plugin:test
+                            </test>
+                            <package>
+                                <!-- WORKS but slow do it different, seperate doc.zip-->
+                                <!--org.astools:as-build-lib:package-swc-->
+                            </package>
+                            <install>
+                                <!--org.apache.maven.plugins:maven-install-plugin:install-->
+                                org.astools:as-build-plugin:install-swc
+                            </install>
+                            <deploy>
+                                org.astools:as-build-plugin:deploy-swc
+                            </deploy>
+                        </phases>
+                    </lifecycle>
+                </lifecycles>
+            </configuration>
+        </component>
+
+
+        <component>
+            <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+            <role-hint>swc</role-hint>
+            <implementation>
+                org.apache.maven.artifact.handler.DefaultArtifactHandler
+            </implementation>
+            <configuration>
+                <type>swc</type>
+                <extension>swc</extension>
+                <language>actionScript</language>
+                <addedToClasspath>true</addedToClasspath>
+            </configuration>
+        </component>
+
+
+        <!-- component definitions for SWF -->
+
+        <component>
+            <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+            <role-hint>swf</role-hint>
+            <implementation>
+                org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
+            </implementation>
+            <configuration>
+                <lifecycles>
+                    <lifecycle>
+                        <id>default</id>
+                        <phases>
+                            <generate-resources>
+                                org.astools:as-build-plugin:generate-resources
+                            </generate-resources>
+                            <process-resources>
+                                org.apache.maven.plugins:maven-resources-plugin:resources
+                            </process-resources>
+                            <compile>
+                                org.astools:as-build-plugin:compile-swf
+                            </compile>
+                            <process-test-resources>
+                                org.apache.maven.plugins:maven-resources-plugin:testResources
+                            </process-test-resources>
+                            <test-compile>
+                                org.astools:as-build-plugin:compile-test
+                            </test-compile>
+                            <test>
+                                org.astools:as-build-plugin:test
+                            </test>
+                            <package>
+                                org.astools:as-build-plugin:package-swf
+                            </package>
+                            <install>
+                                org.astools:as-build-plugin:install-swf
+                            </install>
+                            <deploy>
+                                org.astools:as-build-plugin:deploy-swf
+                            </deploy>
+                        </phases>
+                    </lifecycle>
+                </lifecycles>
+            </configuration>
+        </component>
+
+        <component>
+            <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+            <role-hint>swc</role-hint>
+            <implementation>
+                org.apache.maven.artifact.handler.DefaultArtifactHandler
+            </implementation>
+            <configuration>
+                <type>swf</type>
+                <extension>swc</extension>
+                <language>actionScript</language>
+                <addedToClasspath>false</addedToClasspath>
+            </configuration>
+        </component>
+
+    </components>
+</component-set>

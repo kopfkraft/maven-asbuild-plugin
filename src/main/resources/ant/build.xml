@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="ASBuild" default="compile-swc" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+    <property file="build.properties"/>
+
+    <target name="test">
+
+        <!--
+                <mxmlc file="${test.flex.dir}/${testrunner.name}.mxml"
+            output="${build.dir}/${testrunner.name}.swf">
+
+<source-path path-element="${test.flex.dir}"/>
+         <source-path path-element="${main.flex.dir}"/>
+<compiler.include-libraries dir="${basedir}/libs" append="true">
+<include name="*.swc" />
+</compiler.include-libraries>
+            <compiler.verbose-stacktraces>true</compiler.verbose-stacktraces>
+            <compiler.headless-server>true</compiler.headless-server>
+
+        </mxmlc>
+        -->
+
+
+        <!--
+                        command="<path to the executable for the Flash Player or ADL>"
+
+                port="<port number on which to run the XMLSocket>"
+                buffer="<size in bytes of buffer for incoming data from flash movie>"
+                timeout="<timeout for the runner in milliseconds>"
+                failureproperty="<property name to set to 'true' if any tests fail>"
+                display="<X-Windows display # to use in headless mode">
+                swf="${maven.target}/tests/test.swf"
+        -->
+
+        <mkdir dir="${maven.target}/tests"/>
+        <mkdir dir="${maven.target}/asbuild/flexunit"/>
+
+        <flexunit
+                player="air"
+                toDir="${maven.target}/tests"
+                workingDir="${maven.target}/asbuild/flexunit"
+                haltonfailure="false"
+                verbose="true"
+                localTrusted="true"
+                headless="false">
+
+            <!-- TODO headless need a condition if linux or windows -->
+
+            <source dir="${maven.source}"/>
+
+            <testSource dir="${maven.testSource}">
+                <include name="**/*Test.as"/>
+                <include name="**/*Test.mxml"/>
+            </testSource>
+
+            <library dir="${maven.dependencies}"/>
+            <library dir="${maven.includeLibs}"/>
+            <library dir="${maven.testLibs}"/>
+
+        </flexunit>
+
+    </target>
+
+    <target name="compile-test">
+        <echo message="compile-test runs in test goal."/>
+
+        <!--
+                <flexunit swf="${build.dir}/${testrunner.name}.swf"
+            toDir="${reports.dir}"
+            haltonfailure="false"
+            verbose="true"
+localTrusted="true"/>
+        -->
+    </target>
+
+    <target name="compile-swc">
+
+        <compc output="${maven.target}/${maven.name}.swc" link-report="${maven.target}/${maven.name}-lnk.xml" fork="true">
+
+            <load-config filename="${flex.config}"/>
+            <load-config filename="${project.config}"/>
+
+            <source-path path-element="${flex.home}/frameworks"/>
+
+            <source-path path-element="${maven.source}"/>
+
+            <source-path path-element="${maven.locale}/{locale}" />
+
+            <include-sources dir="${maven.source}" includes="*"/>
+
+            <compiler.external-library-path dir="${maven.dependencies}" append="true">
+                <include name="**/*.swc"/>
+                <include name="**/*.ane"/>
+            </compiler.external-library-path>
+
+            <compiler.external-library-path dir="${flex.home}/frameworks/libs" append="true">
+                <include name="**/*.swc"/>
+                <include name="**/*.ane"/>
+            </compiler.external-library-path>
+
+            <compiler.include-libraries dir="${maven.includeLibs}">
+                <include name="**/*.swc"/>
+                <include name="**/*.ane"/>
+            </compiler.include-libraries>
+
+        </compc>
+
+    </target>
+
+    <target name="compile-swf">
+
+        <mxmlc compiler.as3="true" compiler.strict="true" file="${maven.main}"
+               output="${maven.target}/${maven.name}.swf"
+               static-link-runtime-shared-libraries="true" compiler.actionscript-file-encoding="utf-8"
+               link-report="${maven.target}/${maven.name}-lnk.xml" fork="true" >
+
+            <load-config filename="${flex.config}"/>
+            <load-config filename="${project.config}"/>
+
+            <source-path path-element="${flex.home}/frameworks"/>
+
+            <source-path path-element="${maven.source}"/>
+
+            <source-path path-element="${maven.locale}/{locale}" />
+
+            <compiler.library-path dir="${maven.dependencies}" append="true">
+                <include name="**/*.swc"/>
+                <include name="**/*.ane"/>
+            </compiler.library-path>
+
+            <compiler.library-path dir="${maven.includeLibs}" append="true">
+                <include name="**/*.swc"/>
+                <include name="**/*.ane"/>
+            </compiler.library-path>
+
+        </mxmlc>
+
+    </target>
+
+    <target name="compile-tosca">
+
+        <mxmlc compiler.as3="true" compiler.strict="true" file="${maven.main}"
+               output="${maven.target}/${maven.name}-tosca.swf"
+               static-link-runtime-shared-libraries="true" compiler.actionscript-file-encoding="utf-8"
+               link-report="${maven.target}/${maven.name}-tosca-lnk.xml" fork="true" debug="true" optimize="false"
+               >
+
+            <load-config filename="${flex.config}"/>
+            <load-config filename="${maven.tosca.conf}"/>
+
+            <source-path path-element="${flex.home}/frameworks" />
+
+            <source-path path-element="${maven.source}"/>
+
+            <source-path path-element="${maven.locale}/{locale}" />
+
+            <compiler.library-path dir="${maven.dependencies}" append="true">
+                <include name="**/*.swc"/>
+                <include name="**/*.ane"/>
+            </compiler.library-path>
+
+            <compiler.library-path dir="${maven.includeLibs}" append="true">
+                <include name="**/*.swc"/>
+                <include name="**/*.ane"/>
+            </compiler.library-path>
+
+            <compiler.include-libraries dir="${maven.testLibs}" append="true">
+                <include name="Tricentis*.swc" />
+            </compiler.include-libraries>
+
+        </mxmlc>
+
+    </target>
+
+
+    <target name="obfuscate-swf">
+        <!-- TODO implement obfuscation task -->
+        <echo message="obfuscating not yet implemented"/>
+    </target>
+
+    <target name="package-swc">
+    </target>
+
+    <target name="asdoc">
+
+        <mkdir dir="${maven.target}/asdoc"/>
+
+        <asdoc output="${maven.target}/asdoc" lenient="true" failonerror="false" keep-xml="true" fork="true">
+
+            <source-path path-element="${maven.source}"/>
+            <doc-sources path-element="${maven.source}"/>
+
+            <load-config filename="${flex.config}"/>
+            <load-config filename="${project.config}"/>
+
+            <compiler.library-path dir="${maven.dependencies}" append="true">
+                <include name="**/*.swc"/>
+            </compiler.library-path>
+
+            <compiler.library-path dir="${maven.includeLibs}" append="true">
+                <include name="**/*.swc"/>
+            </compiler.library-path>
+            <!--
+            <compiler.library-path dir="${path.flex}/frameworks/libs" append="true">
+                <include name="**/*.swc" />
+            </compiler.library-path>
+            -->
+
+        </asdoc>
+
+        <zip destfile="${maven.target}/${maven.name}-doc.zip" basedir="${maven.target}/asdoc" excludes="tempdita/**"/>
+
+        <!-- updates swc with asdoc xml -->
+        <!--
+        <zip destfile="@{output}/${maven.name}.swc" update="true">
+            <zipfileset dir="@{output}/@{name}/tempdita" prefix="docs">
+                <include name="*.xml"/>
+            </zipfileset>
+        </zip>
+        -->
+    </target>
+
+    <target name="package-swf">
+
+
+        <copy file="${maven.target}/${maven.name}.swf" tofile="${maven.target}/classes/${maven.nickname}.swf"/>
+        <!--
+        <zip destfile="${maven.target}/${maven.name}.zip">
+            <fileset dir="${maven.project}/src/main/resources">
+                <include name="**/*" />
+            </fileset>
+            <fileset dir="${maven.target}/classes" file="${maven.target}/classes/${maven.nickname}.swf" />
+        </zip>
+        -->
+
+    </target>
+
+    <target name="copy-dep">
+
+        <mkdir dir="${maven.project}/src/libs"/>
+        <mkdir dir="${maven.locale}" />
+
+        <artifact:pom id="mypom" file="${maven.project}/pom.xml"/>
+
+        <artifact:dependencies filesetId="deps" pomRefId="mypom" scopes="compile"/>
+        <artifact:dependencies filesetId="testdeps" pomRefId="mypom" scopes="test"/>
+        <artifact:dependencies filesetId="rundeps" pomRefId="mypom" scopes="runtime"/>
+
+        <!-- copy compile dependencies -->
+        <mkdir dir="${maven.dependencies}"/>
+        <echo message="copy compile time dependencies to ${maven.dependencies}"/>
+        <copy todir="${maven.dependencies}">
+            <fileset refid="deps"/>
+            <mapper type="flatten"/>
+        </copy>
+
+        <!-- copy test dependencies -->
+        <mkdir dir="${maven.testLibs}"/>
+        <echo message="copy test scope dependencies to ${maven.testLibs}"/>
+        <copy todir="${maven.testLibs}">
+            <fileset refid="testdeps"/>
+            <mapper type="flatten"/>
+        </copy>
+
+        <!-- copy runtime dependencies -->
+        <mkdir dir="${maven.target}/classes"/>
+        <echo message="unzipping runtime scope dependencies to ${maven.testLibs}"/>
+        <unzip dest="${maven.target}/classes">
+            <fileset refid="rundeps"/>
+        </unzip>
+
+    </target>
+
+    <target name="install-swc">
+        <artifact:pom id="mypom" file="${maven.project}/pom.xml"/>
+        <artifact:install file="${maven.target}/${maven.name}.swc">
+            <pom refid="mypom"/>
+
+            <attach file="${maven.target}/${maven.name}-lnk.xml" type="xml" classifier="lnk"/>
+            <!--
+            <attach file="${basedir}/target/my-project-1.0-javadoc.jar" type="jar" classifier="javadoc" />
+            <attach file="${basedir}/target/my-project-1.0-junk.zip" type="zip" classifier="junk" />
+            -->
+        </artifact:install>
+    </target>
+
+    <target name="deploy-swc">
+
+        <artifact:install-provider artifactId="wagon-http" version="1.0-beta-2"/>
+        <artifact:install-provider artifactId="wagon-webdav" version="1.0-beta-2"/>
+        <artifact:install-provider artifactId="wagon-ssh" version="1.0-beta-2"/>
+        <artifact:install-provider artifactId="wagon-ftp" version="1.0-beta-2"/>
+
+        <artifact:pom id="mypom" file="${maven.project}/pom.xml"/>
+        <artifact:deploy file="${maven.target}/${maven.name}.swc">
+            <pom refid="mypom"/>
+
+            <attach file="${maven.target}/${maven.name}-lnk.xml" type="xml" classifier="lnk"/>
+            <!--
+            <attach file="${basedir}/target/my-project-1.0-sources.jar" type="jar" classifier="sources"/>
+            <attach file="${basedir}/target/my-project-1.0-javadoc.jar" type="jar" classifier="javadoc"/>
+            <attach file="${basedir}/target/my-project-1.0-junk.zip" type="zip" classifier="junk"/>
+            -->
+        </artifact:deploy>
+    </target>
+
+    <target name="install-swf">
+        <artifact:pom id="mypom" file="${maven.project}/pom.xml"/>
+        <artifact:install file="${maven.target}/${maven.name}.swf">
+            <pom refid="mypom"/>
+
+            <attach file="${maven.target}/${maven.name}-lnk.xml" type="xml" classifier="lnk"/>
+            <attach file="${maven.target}/${maven.name}.zip" type="zip"/>
+            <!--
+            <attach file="${basedir}/target/my-project-1.0-javadoc.jar" type="jar" classifier="javadoc" />
+            <attach file="${basedir}/target/my-project-1.0-junk.zip" type="zip" classifier="junk" />
+            -->
+        </artifact:install>
+    </target>
+
+
+
+    <target name="deploy-swf">
+
+        <artifact:install-provider artifactId="wagon-http" version="1.0-beta-2"/>
+        <artifact:install-provider artifactId="wagon-webdav" version="1.0-beta-2"/>
+        <artifact:install-provider artifactId="wagon-ssh" version="1.0-beta-2"/>
+        <artifact:install-provider artifactId="wagon-ftp" version="1.0-beta-2"/>
+
+        <artifact:pom id="mypom" file="${maven.project}/pom.xml"/>
+        <artifact:deploy file="${maven.target}/${maven.name}.swf">
+
+
+            <pom refid="mypom"/>
+
+            <attach file="${maven.target}/${maven.name}-lnk.xml" type="xml" classifier="lnk"/>
+            <attach file="${maven.target}/${maven.name}.zip" type="zip"/>
+            <!--
+            <attach file="${basedir}/target/my-project-1.0-sources.jar" type="jar" classifier="sources"/>
+            <attach file="${basedir}/target/my-project-1.0-javadoc.jar" type="jar" classifier="javadoc"/>
+            <attach file="${basedir}/target/my-project-1.0-junk.zip" type="zip" classifier="junk"/>
+            -->
+        </artifact:deploy>
+    </target>
+
+    <taskdef resource="flexTasks.tasks" classpath="${flex.home}/ant/lib/flexTasks.jar"/>
+    <!-- export FLEX_HOME for flexTasks -->
+    <property name="FLEX_HOME" value="${flex.home}"/>
+
+    <path id="maven-ant-tasks.classpath" path="${maven.antlib}/maven-ant-tasks-2.1.3.jar"/>
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant"
+             classpathref="maven-ant-tasks.classpath" reverseloader="true"/>
+
+    <taskdef resource="flexUnitTasks.tasks" classpath="${maven.antlib}/flexUnitTasks-4.1.0-8.jar"/>
+
+</project>

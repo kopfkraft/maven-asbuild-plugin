@@ -1,0 +1,33 @@
+<flex-config xmlns="http://www.adobe.com/2006/flex-config">
+
+    <compiler>
+
+        <debug>false</debug>
+        <optimize>true</optimize>
+        <omit-trace-statements>true</omit-trace-statements>
+
+        <locale>
+            <locale-element>en_US</locale-element>
+        </locale>
+
+        <verbose-stacktraces>false</verbose-stacktraces>
+
+        <define>
+            <name>CONFIG::DEBUG</name>
+            <value>false</value>
+        </define>
+        <define>
+            <name>CONFIG::BUILDVERSION</name>
+            <value>${maven.buildnumber}</value>
+        </define>
+    </compiler>
+
+    <metadata>
+        <title>Adobe Flex 4 Application</title>
+        <description>http://www.adobe.com/products/flex</description>
+        <publisher>unknown</publisher>
+        <creator>unknown</creator>
+        <language>EN</language>
+    </metadata>
+
+</flex-config>
